@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+
+<!-- The next is the registration form -->
+<div class = "content-section">
+    <form method = "POST" action="">
+
+        <!-- Adds csrs token, this is where the hidden key helps with it -->
+        {{ form.hidden_tag() }}
+
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Authenticate your account!</legend>
+
+            <!-- Token input -->
+            <div class = "form-group">
+
+                {{ form.token.label(class="form-control-label") }}
+
+                <!-- If errors exist, show them -->
+                {% if form.token.errors %}
+
+                    {{ form.token(class="form-control form-control-lg is-invalid") }}
+
+                    <div class="invalid-feedback">
+
+                        {% for error in form.token.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+
+                    </div>
+                    
+                {% else %}
+
+                    {{ form.token(class="form-control formcontrol-lg") }}
+                    
+                {% endif %}
+
+            </div>
+
+        </fieldset>
+
+        <!-- The following is a submit button -->
+        <div class="form-group">
+
+            {{ form.submit(class="btn btn-outline-info") }}
+
+        </div>
+
+    </form>
+</div>
+
+
+{% endblock %}

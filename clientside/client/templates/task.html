@@ -1,0 +1,122 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<section>
+  <article class="media content-section">
+
+    <div class="media-body">
+
+      <div class="article-metadata">
+
+        <a class="mr-2"
+          href="{{ url_for('users.user_by_id', user_id=task.elderly_id) }}">{{ task.get("elderly_name") }}</a>
+        <small class="text-muted">{{ task.get("date_posted") }}</small>
+
+        
+        <h2 class="article-title">{{ task.title }}</h2>
+        <p class="article-content">{{ task.content }}</p>
+
+
+        
+        {% if task.get("task_doer_id") %}
+          <a class="mr-2"
+            href="{{ url_for('users.user_by_id', user_id=task.get('task_doer_id')) }}">Taskdoer: {{ task.get("task_doer_name") }}</a>
+        {% endif %}
+
+
+
+        <!-- if the elderly user is the current logged in user, then it shows buttons to update and delete -->
+        {% if elderly %}
+        <div>
+
+          <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{{ url_for('tasks.elderly_update_task', task_id = task.id) }}">Update</a>
+          <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal"
+            data-target="#deleteModal_elderly"> Delete </button>
+
+        </div>
+        {% endif %}
+
+        <!-- if the task doer is available, shows a button to add it -->
+        {% if task_doer == 1 %}
+
+        <div>
+
+          <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{{ url_for('tasks.task_doer_add_task', task_id = task.id) }}">Add</a>
+
+        </div>
+
+        <!-- if the task doer is the task doer of the task, then shows a delete option -->
+        {% elif task_doer == 2 %}
+
+        <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal"
+          data-target="#deleteModal_task_doer"> Remove Task </button>
+
+        {% endif %}
+
+      </div>
+
+    </div>
+
+  </article>
+
+  <!-- TODO: Create DELETE, and update and add endpoints for all of the modals and the tasks -->
+  <div class="modal fade" id="deleteModal_elderly" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteModalLabel">Delete Post?</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+
+        <!-- Modal for the delete the page -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+          <!-- the action makes it so that the action goes to that endpoint -->
+          <form action="{{ url_for('tasks.elderly_delete_task', task_id = task.id) }}" method="GET">
+            <input class="btn btn-danger" type="submit" value="Delete">
+          </form>
+
+        </div>
+
+
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="deleteModal_task_doer" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteModalLabel">Remove Task?</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+
+        <!-- Modal for the delete the page -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+          <!-- the action makes it so that the action goes to that endpoint -->
+          <form action="{{ url_for('tasks.task_doer_remove_task', task_id = task.id) }}" method="GET">
+            <input class="btn btn-danger" type="submit" value="Delete">
+          </form>
+
+        </div>
+
+
+      </div>
+    </div>
+  </div>
+
+</section>
+
+{% endblock content %}

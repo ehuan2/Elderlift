@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+    {% for task in tasks %}
+
+        <!-- Shows each task -->
+        <article class="media content-section">
+
+            <div class="media-body">
+                <div class="article-metadata">
+
+                    <!-- creates a link to the elderly user,  -->
+
+                    <a class="mr-2" href="{{ url_for('users.user_by_id', user_id=task.get('elderly_id')) }}">{{ task.get("elderly_name") }}</a>
+                    <small class="text-muted">{{ task.get("date_posted") }}</small>
+
+                </div>
+                
+                <!-- basically the url_for creates a url, it has the endpoint of /post/<post_id> and we fill post_id as post.id -->
+
+                <h2><a class="article-title" href="{{ url_for('tasks.task_by_id', task_id=task.id) }}">{{ task.get("title") }}</a></h2>
+                <p class="article-content">{{ task.get("content") }}</p>
+
+                {% if task.get("task_doer_id") %}
+                    <a class="mr-2"
+                    href="{{ url_for('users.user_by_id', user_id=task.get('task_doer_id')) }}">Taskdoer: {{ task.get("task_doer_name") }}</a>
+                {% endif %}
+
+            </div>
+
+        </article>
+
+    {% endfor %}
+
+    <!-- Here are to show all the different pages -->
+    {% for i in range(0, total_pages) %}
+
+        {% if (i+1) == page_num %}
+            <a class = "btn btn-outline-info mb-4" href="{{ url_for('users.users_tasks', page = i+1) }}"> {{ i+1 }} </a>
+        {% else %}
+            <a class = "btn btn-info mb-4" href="{{ url_for('users.users_tasks', page = i+1) }}"> {{ i+1 }} </a>
+        {% endif %}
+
+    {% endfor %}
+
+{% endblock content %}
