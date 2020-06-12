@@ -1,0 +1,257 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+
+    <!-- if the title exists, add it -->
+    {% if title %}
+    <title>ElderLift - {{title}}</title>
+    {% endif %}
+
+    <!-- neccessary bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+
+</head>
+
+
+<body>
+    <header class="site-header">
+        <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
+          <div class="container">
+
+            <a class="navbar-brand mr-4" href="/">ElderLift</a>
+
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarToggle">
+              <div class="navbar-nav mr-auto">
+                  <!-- Stuff that's always there, the home and about pages -->
+                <a class="nav-item nav-link" href="{{ url_for('main.home') }}">Home</a>
+                <a class="nav-item nav-link" href="{{ url_for('main.about') }}">About</a>
+              </div>
+
+              <!-- Navbar Right Side -->
+              <div class="navbar-nav">
+                {% if authenticated %}
+
+                    <!-- if they're logged in -->    
+                    <a class="nav-item nav-link" href="{{ url_for('users.users_tasks') }}">Your Tasks</a>
+                    <a class="nav-item nav-link" href="{{ url_for('tasks.create_task') }}">Create Task</a>
+                    <a class="nav-item nav-link" href="{{ url_for('users.account') }}">Account</a>
+                    <a class="nav-item nav-link" href="{{ url_for('users.logout') }}">Logout</a>
+
+                {% else %}
+
+                    <!-- otherwise -->
+                    <a class="nav-item nav-link" href="{{ url_for('users.register') }}">Register</a>
+                    <a class="nav-item nav-link" href="{{ url_for('users.login') }}">Login</a>
+                    
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </nav>
+      </header>
+
+
+    <main role="main" class="container">
+        <div class="row">
+            <div class="col-md-8">
+
+                <!-- So this next line basically it gets the messages from flash -->
+
+                <!-- And then the other categories is the bootstrap, saying that whatever categories get passed will take effect -->
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+
+                    {% if messages %}
+
+                        <!-- Basically, if the messages exist, loop over the category and message for each message -->
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">
+                                <!-- The {{category}} refers to the string passed in through the category -->
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+
+                    {% endif %}
+
+                {% endwith %}
+
+                
+                {% for task in tasks %}
+
+                <!-- Shows each task -->
+                <article class="media content-section">
+
+                    <div class="media-body">
+                        <div class="article-metadata">
+
+                            <!-- creates a link to the elderly user,  -->
+
+                            <a class="mr-2" href="{{ url_for('users.user_by_id', user_id=task.get('elderly_id')) }}">{{ task.get("elderly_name") }}</a>
+                            <small class="text-muted">{{ task.get("date_posted") }}</small>
+
+                        </div>
+                        
+                        <!-- basically the url_for creates a url, it has the endpoint of /post/<post_id> and we fill post_id as post.id -->
+
+                        <h2><a class="article-title" href="{{ url_for('tasks.task_by_id', task_id=task.id) }}">{{ task.get("title") }}</a></h2>
+                        <p class="article-content">{{ task.get("content") }}</p>
+
+                    </div>
+
+                </article>
+
+                {% endfor %}
+
+                <!-- Here are to show all the different pages -->
+                {% for i in range(0, total_pages) %}
+
+                    {% if (i+1) == page_num %}
+                        <a class = "btn btn-outline-info mb-4" href="{{ url_for('main.home', page = i+1) }}"> {{ i+1 }} </a>
+                    {% else %}
+                        <a class = "btn btn-info mb-4" href="{{ url_for('main.home', page = i+1) }}"> {{ i+1 }} </a>
+                    {% endif %}
+
+                {% endfor %}
+
+            </div>
+
+
+            <!-- Side bar stuff, don't know what to put yet -->
+            <div class="col-md-4">
+                
+                <div class="content-section">
+                    <h3>Our Sidebar</h3>
+                    <p class='text-muted'>You can put any information here you'd like.
+                        <ul class="list-group">
+                            <li class="list-group-item list-group-item-light">Latest Posts</li>
+                            <li class="list-group-item list-group-item-light">Announcements</li>
+                            <li class="list-group-item list-group-item-light">Calendars</li>
+                            <li class="list-group-item list-group-item-light">etc</li>
+                        </ul>
+                    </p>
+                </div>
+
+                <!-- Form for the filter by location -->
+                <div class = "content-section">
+                    <form method = "POST" action="">
+
+                        <!-- Adds csrs token, this is where the hidden key helps with it -->
+                        {{ form.hidden_tag() }}
+
+                        <fieldset class="form-group">
+                            <legend class="border-bottom mb-4">Filter by Location!</legend>
+
+                            <!-- Country input -->
+                            <div class = "form-group">
+
+                                {{ form.country.label(class="form-control-label") }}
+
+                                <!-- If errors exist, show them -->
+                                {% if form.country.errors %}
+
+                                    {{ form.country(class="form-control form-control-lg is-invalid") }}
+
+                                    <div class="invalid-feedback">
+
+                                        {% for error in form.country.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+
+                                    </div>
+                                    
+                                {% else %}
+
+                                    {{ form.country(class="form-control formcontrol-lg") }}
+                                    
+                                {% endif %}
+
+                            </div>
+
+                            <!-- City input -->
+                            <div class = "form-group">
+                                {{ form.city.label(class="form-control-label") }}
+
+                                <!-- If errors exist, show them -->
+                                {% if form.city.errors %}
+
+                                    {{ form.city(class="form-control form-control-lg is-invalid") }}
+
+                                    <div class="invalid-feedback">
+
+                                        {% for error in form.city.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+
+                                    </div>
+
+                                {% else %}
+
+                                    {{ form.city(class="form-control formcontrol-lg") }}
+
+                                {% endif %}
+
+                            </div>
+
+                            <!-- Address input -->
+                            <div class = "form-group">
+                                {{ form.address.label(class="form-control-label") }}
+
+                                <!-- If errors exist, show them -->
+                                {% if form.address.errors %}
+
+
+                                    {{ form.address(class="form-control form-control-lg is-invalid") }}
+
+                                    <div class="invalid-feedback">
+
+                                        {% for error in form.address.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+
+                                    </div>
+
+
+                                {% else %}
+
+                                    {{ form.address(class="form-control formcontrol-lg") }}
+
+                                {% endif %}
+
+                            </div>
+                        </fieldset>
+
+                        <!-- The following is a submit button -->
+                        <div class="form-group">
+                            {{ form.submit(class="btn btn-outline-info") }}
+                        </div>
+
+                    </form>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Necessary Bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

@@ -1,0 +1,204 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<!-- Div containing all of the user's info -->
+<div class="media">
+    <div class="media-body">
+        <img class = "rounded-circle article-img" src="{{ url_for('static', filename = 'images/' + ('elderly.png' if (user.get('user_role') == 'Elderly') else 'student.png')) }}" alt="">  
+        <h2 class="account-heading">Name: {{ user.get("name") }}</h2>
+        <p class="text-secondary">Email: {{ user.get("email") }}</p>
+        <p class="text-secondary">Contact: {{ user.get("contact") }}</p>
+    </div>
+</div>
+
+<!-- Some form data -->
+<div class="content-section">
+    <!-- Means that it will post action to same route as it currently is -->
+    <!-- the enctype is very important - it allows for images and other files to be properly uploaded -->
+    <form method="POST" action="" enctype="multipart/form-data">
+
+        <!-- Adds csrs token, this is where the hidden key helps with it -->
+        {{ form.hidden_tag() }}
+
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Account info</legend>
+            
+             <!-- Name input -->
+             <div class = "form-group">
+
+                {{ form.name.label(class="form-control-label") }}
+
+                <!-- If errors exist, show them -->
+                {% if form.name.errors %}
+
+                    {{ form.name(class="form-control form-control-lg is-invalid") }}
+
+                    <div class="invalid-feedback">
+
+                        {% for error in form.name.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+
+                    </div>
+                    
+                {% else %}
+
+                    {{ form.name(class="form-control formcontrol-lg") }}
+                    
+                {% endif %}
+
+            </div>
+
+
+             <!-- Address input -->
+             <div class = "form-group">
+
+                {{ form.address.label(class="form-control-label") }}
+
+                <!-- If errors exist, show them -->
+                {% if form.address.errors %}
+
+                    {{ form.address(class="form-control form-control-lg is-invalid") }}
+
+                    <div class="invalid-feedback">
+
+                        {% for error in form.address.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+
+                    </div>
+                    
+                {% else %}
+
+                    {{ form.address(class="form-control formcontrol-lg") }}
+                    
+                {% endif %}
+
+            </div>
+
+
+             <!-- City input -->
+             <div class = "form-group">
+
+                {{ form.city.label(class="form-control-label") }}
+
+                <!-- If errors exist, show them -->
+                {% if form.city.errors %}
+
+                    {{ form.city(class="form-control form-control-lg is-invalid") }}
+
+                    <div class="invalid-feedback">
+
+                        {% for error in form.city.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+
+                    </div>
+                    
+                {% else %}
+
+                    {{ form.city(class="form-control formcontrol-lg") }}
+                    
+                {% endif %}
+
+            </div>
+
+            
+             <!-- Country input -->
+             <div class = "form-group">
+
+                {{ form.country.label(class="form-control-label") }}
+
+                <!-- If errors exist, show them -->
+                {% if form.country.errors %}
+
+                    {{ form.country(class="form-control form-control-lg is-invalid") }}
+
+                    <div class="invalid-feedback">
+
+                        {% for error in form.country.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+
+                    </div>
+                    
+                {% else %}
+
+                    {{ form.country(class="form-control formcontrol-lg") }}
+                    
+                {% endif %}
+
+            </div>
+
+             <!-- Contact input -->
+             <div class = "form-group">
+
+                {{ form.contact.label(class="form-control-label") }}
+
+                <!-- If errors exist, show them -->
+                {% if form.contact.errors %}
+
+                    {{ form.contact(class="form-control form-control-lg is-invalid") }}
+
+                    <div class="invalid-feedback">
+
+                        {% for error in form.contact.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+
+                    </div>
+                    
+                {% else %}
+
+                    {{ form.contact(class="form-control formcontrol-lg") }}
+                    
+                {% endif %}
+
+            </div>
+
+        </fieldset>
+
+        <div class="form-group">
+            {{ form.submit(class="btn btn-outline-info") }}
+
+            <span> 
+                <button type = "button" class = "btn btn-danger m-1" data-toggle="modal" data-target="#deleteModal"> Delete </button>
+            </span>
+        </div>
+
+    </form>
+
+</div>
+
+<!-- Modals are like alert boxes, got this from bootstrap -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+
+        <!-- The header for the modal -->
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteModalLabel">Delete Account?</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <!-- Bottom of modal -->
+        <div class="modal-footer">
+            
+            <!-- Button that closes it -->
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+            <!-- the action makes it so that the action goes to that endpoint -->
+            <form action="{{ url_for('users.account_delete') }}" method="GET">
+                <input class = "btn btn-danger" type="submit" value = "Delete">
+            </form>
+
+        </div>
+        
+      </div>
+    </div>
+</div>
+
+{% endblock content %}

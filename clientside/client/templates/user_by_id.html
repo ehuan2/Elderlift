@@ -1,0 +1,58 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+    <!-- The header based on the user's name and total posts -->
+    <h1 class = "mb-3">
+        <strong>Tasks by {{ user.get("name") }} ({{ tasks_num }})</strong>
+    </h1>
+
+    <div class = "media content-section article-metadata">
+        <span class = "mr-4">Email: {{ user.get("email")}}</span>
+        <span class = "mr-4">City: {{ user.get("city") }}, {{ user.get("country") }}</span>
+        <span class = "mr-4">Contact: {{ user.get("contact") }}</span>
+    </div>
+    
+
+    <section>
+
+        <!-- For each task, display it -->
+        {% for task in tasks %}
+
+            <!-- The article for each task -->
+            <article class="media content-section">
+
+                <div class="media-body">
+
+                    <!-- This is to display the general information -->
+                    <div class="article-metadata">
+                        <a class="mr-2" href="{{ url_for('users.user_by_id', user_id=user.id) }}">{{ user.name }}</a>
+                        <small class="text-muted">{{ task.date_posted }}</small>
+                    </div>
+
+                    <!-- basically the url_for creates a url, it has the endpoint of /post/<post_id> and we fill post_id as post.id -->
+                    <h2><a class="article-title" href="{{ url_for('tasks.task_by_id', task_id=task.id) }}">{{ task.title }}</a></h2>
+                    <p class="article-content">{{ task.content }}</p>
+
+                </div>
+
+            </article>
+
+        {% endfor %}
+
+        <!-- Here are to show all the different pages -->
+
+        {% for i in range(0, total_pages) %}
+
+            {% if (i+1) == page_num %}
+                <a class = "btn btn-outline-info mb-4" href="{{ url_for('users.user_by_id', user_id = user.id, page = i+1) }}"> {{ i+1 }} </a>
+            {% else %}
+                <a class = "btn btn-info mb-4" href="{{ url_for('users.user_by_id', user_id = user.id, page = i+1) }}"> {{ i+1 }} </a>
+            {% endif %}
+
+        {% endfor %}
+
+    </section>
+
+
+{% endblock content %}
