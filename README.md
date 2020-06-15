@@ -22,3 +22,5 @@ If you want to run on your local device, do the following:
 6. Set your OS environment variables of SECRET_KEY, EMAIL_USER, etc. to the right ones. For more information, check out Corey Schafer on setting os variables.
 7. Run python3 run.py in clientside. 
 8. Enjoy!
+  
+**To run locally, switch to local_version branch and follow the instructions in the READ ME **
